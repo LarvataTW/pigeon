@@ -45,6 +45,7 @@
 		8803546D758CAA9E13D2300B /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		8AA1334BB6D76CA365BEBE7B /* Pods-Pigeon_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Pigeon_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Pigeon_Example/Pods-Pigeon_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		97F76DC8E54EAA55F435CA17 /* Pods_Pigeon_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Pigeon_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A94E3818214FD27A00A26AFB /* Pigeon_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Pigeon_Example.entitlements; sourceTree = "<group>"; };
 		D80DDC7E2147CA5A00F05187 /* PigeonServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PigeonServiceTests.swift; sourceTree = "<group>"; };
 		F1CF579F32AD65B516D676D6 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -81,6 +82,7 @@
 		607FACC71AFB9204008FA782 = {
 			isa = PBXGroup;
 			children = (
+				A94E3818214FD27A00A26AFB /* Pigeon_Example.entitlements */,
 				607FACF51AFB993E008FA782 /* Podspec Metadata */,
 				607FACD21AFB9204008FA782 /* Example for Pigeon */,
 				607FACE81AFB9204008FA782 /* Tests */,
@@ -214,10 +216,17 @@
 				TargetAttributes = {
 					607FACCF1AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
+						DevelopmentTeam = 7RMCG6LBC4;
 						LastSwiftMigration = 0900;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
+						DevelopmentTeam = 7RMCG6LBC4;
 						LastSwiftMigration = 0900;
 						TestTargetID = 607FACCF1AFB9204008FA782;
 					};
@@ -504,6 +513,8 @@
 			baseConfigurationReference = 8AA1334BB6D76CA365BEBE7B /* Pods-Pigeon_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Pigeon_Example.entitlements;
+				DEVELOPMENT_TEAM = 7RMCG6LBC4;
 				INFOPLIST_FILE = Pigeon/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
@@ -519,6 +530,8 @@
 			baseConfigurationReference = 33F9D3302F3822DC93202769 /* Pods-Pigeon_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Pigeon_Example.entitlements;
+				DEVELOPMENT_TEAM = 7RMCG6LBC4;
 				INFOPLIST_FILE = Pigeon/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
@@ -533,6 +546,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 18C9CE8E1429EF7B06AE609A /* Pods-Pigeon_Tests.debug.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = 7RMCG6LBC4;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -555,6 +569,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5B2BA5C3C233A0CCBA01D818 /* Pods-Pigeon_Tests.release.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = 7RMCG6LBC4;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",

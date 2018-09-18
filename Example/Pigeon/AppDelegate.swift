@@ -16,14 +16,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
-//    var systemInfo = utsname()
-//    uname(&systemInfo)
-//    let machineMirror = Mirror(reflecting: systemInfo.machine)
-//    let identifier = machineMirror.children.reduce("") { identifier, element in
-//      guard let value = element.value as? Int8, value != 0 else { return identifier }
-//      return identifier + String(UnicodeScalar(UInt8(value)))
-//    }
-//    print(identifier)
+    //    var systemInfo = utsname()
+    //    uname(&systemInfo)
+    //    let machineMirror = Mirror(reflecting: systemInfo.machine)
+    //    let identifier = machineMirror.children.reduce("") { identifier, element in
+    //      guard let value = element.value as? Int8, value != 0 else { return identifier }
+    //      return identifier + String(UnicodeScalar(UInt8(value)))
+    //    }
+    //    print(identifier)
 
     // 假設我一開始就要註冊推播
     if #available(iOS 10.0, *) {
@@ -33,6 +33,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     return true
+  }
+
+  func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    // 註冊裝置
+    PigeonService.registerDeviceToken(deviceToken: deviceToken)
+  }
+
+  func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+    // 註冊失敗
+    fatalError("do something...?")
+  }
+
+  func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
+    // 收到推播
+  }
+  
+  func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    // 收到推播
   }
 }
 

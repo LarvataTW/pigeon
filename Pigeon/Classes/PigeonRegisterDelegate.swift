@@ -41,24 +41,3 @@ extension PigeonRegisterDelegate {
   }
 
 }
-
-/**
- 如果協定對象有同時遵守 UIApplicationDelegate 協議（白話： 如果從AppDelegate）
- */
-@available(iOS 10.0, *)
-extension PigeonRegisterDelegate where Self: UIApplicationDelegate {
-  func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-    // 註冊裝置
-    PigeonService.registerDeviceToken(deviceToken: deviceToken)
-  }
-  func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-    // 註冊失敗
-    fatalError("do something...?")
-  }
-  func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
-    // 收到推播
-  }
-  func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-    // 收到推播
-  }
-}

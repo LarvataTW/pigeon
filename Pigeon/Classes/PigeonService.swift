@@ -14,6 +14,8 @@ public class PigeonService: NSObject {
   private(set) static var appKey: String?
   private(set) static var deviceToken: String?
 
+  private static var pigeonService: PigeonService?
+
   @available(iOS 10.0, *)
   private(set) static var delegate: PigeonRegisterDelegate?
 
@@ -21,14 +23,34 @@ public class PigeonService: NSObject {
   public static func registerForRemoteNotifications(appKey: String, delegate: PigeonRegisterDelegate) {
     self.appKey = appKey
     self.delegate = delegate
-    fatalError("Must Implement")
+
+    self.pigeonService = PigeonService()
+
+    requestNotificationsPermission {
+      DispatchQueue.main.async {
+        UIApplication.shared.registerForRemoteNotifications()
+      }
+    }
   }
 
   public static func registerDeviceToken(deviceToken: Data) {
     self.deviceToken = deviceToken.reduce("") {
       $0 + String(format: "%02x", $1)
     }
+
     fatalError("Must Implement")
+  }
+
+  private static func requestNotificationsPermission(completion: @escaping () -> Swift.Void) {
+    if #available(iOS 10.0, *) {
+      let options: UNAuthorizationOptions = [.alert, .sound, .badge]
+      UNUserNotificationCenter.current().requestAuthorization(options: options) { (granted, error) in
+        if granted {
+          UNUserNotificationCenter.current().delegate = self.pigeonService
+          completion()
+        }
+      }
+    }
   }
 
   /**
