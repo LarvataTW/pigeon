@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // 假設我一開始就要註冊推播
     if #available(iOS 10.0, *) {
-      PigeonService.registerForRemoteNotifications(appKey: "appKey", delegate: self)
+      PigeonService.shared.registerForRemoteNotifications(appKey: "appKey", delegate: self)
     } else {
       // Fallback on earlier versions
     }
@@ -37,7 +37,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
     // 註冊裝置
-    PigeonService.registerDeviceToken(deviceToken: deviceToken)
+    if #available(iOS 10.0, *) {
+      PigeonService.shared.registerDeviceToken(deviceToken: deviceToken)
+    }
   }
 
   func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
