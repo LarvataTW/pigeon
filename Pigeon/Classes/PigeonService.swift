@@ -20,9 +20,11 @@ public class PigeonService: NSObject {
   private(set) weak var delegate: PigeonRegisterDelegate?
 
   private let apiService: APIService
+  private let keychain: KeychainService
 
   public override init() {
     apiService = APIService()
+    keychain = KeychainService(service: "PigeonService.PigeonToken")
     super.init()
   }
 
@@ -50,9 +52,10 @@ public class PigeonService: NSObject {
     device.deviceToken = self.deviceToken
     device.active = true
     device.appKey = self.appKey
+    device.pigeonToken = try? keychain.read()
 
-    register(device: device, onCompleted: { (device) in
-      print(device)
+    register(device: device, onCompleted: { [unowned self] (device) in
+      self.savePigeonToken(device)
     }) { (error) in
       print("register error: \(error)")
     }
@@ -76,11 +79,21 @@ public class PigeonService: NSObject {
    - parameter onError: Action to invoke upon server returned unexpected response or request timeout.
    */
   private func register(device: Device, onCompleted: @escaping (Device) -> Void, onError: @escaping (Error) -> Void) {
-    apiService.registerDevice(device, completionHandler: {[unowned self] (data) in
-      let device = self.deviceFrom(data)
-      onCompleted(device)
-    }) { (error) in
-      onError(error)
+
+    if device.pigeonToken != nil {
+      apiService.patchDevice(device, completionHandler: {[unowned self] (data) in
+        let device = self.deviceFrom(data)
+        onCompleted(device)
+      }) { (error) in
+        onError(error)
+      }
+    } else {
+      apiService.registerDevice(device, completionHandler: {[unowned self] (data) in
+        let device = self.deviceFrom(data)
+        onCompleted(device)
+      }) { (error) in
+        onError(error)
+      }
     }
   }
 
@@ -88,7 +101,6 @@ public class PigeonService: NSObject {
     var device = Device()
     guard let json = try? JSONSerialization.jsonObject(with: data, options: [])  else { return device}
     guard let dict = json as? Dictionary<String, Any> else { return device}
-    print("response: \(dict)")
 
     device.deviceModel = dict["device_model"] as? String
     device.active = dict["active"] as? Bool
@@ -96,6 +108,15 @@ public class PigeonService: NSObject {
     device.deviceToken = dict["device_token"] as? String
 
     return device
+  }
+
+  private func savePigeonToken(_ device: Device) {
+    guard let token = device.pigeonToken else { return }
+    do {
+      try keychain.save(token)
+    } catch {
+      print("save token error: \(error)")
+    }
   }
 
 }
