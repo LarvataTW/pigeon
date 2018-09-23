@@ -22,9 +22,15 @@ public class PigeonService: NSObject {
   private let apiService: APIService
   private let keychain: KeychainService
 
+  struct KeychainConfigure {
+    static let service = "PigeonService.com"
+    static let PigeonTokenAccount = "PigeonToken"
+    static let DeviceTokenAccount = "DeviceToken"
+  }
+
   public override init() {
     apiService = APIService()
-    keychain = KeychainService(service: "PigeonService.PigeonToken")
+    keychain = KeychainService(service: KeychainConfigure.service)
     super.init()
   }
 
@@ -52,7 +58,7 @@ public class PigeonService: NSObject {
     device.deviceToken = self.deviceToken
     device.active = true
     device.appKey = self.appKey
-    device.pigeonToken = try? keychain.read()
+    device.pigeonToken = try? keychain.read(account: KeychainConfigure.PigeonTokenAccount)
 
     register(device: device, onCompleted: { [unowned self] (device) in
       self.savePigeonToken(device)
@@ -113,12 +119,11 @@ public class PigeonService: NSObject {
   private func savePigeonToken(_ device: Device) {
     guard let token = device.pigeonToken else { return }
     do {
-      try keychain.save(token)
+      try keychain.save(account: KeychainConfigure.PigeonTokenAccount, token: token)
     } catch {
-      print("save token error: \(error)")
+      print("save pigeon token error: \(error)")
     }
   }
-
 }
 
 @available(iOS 10.0, *)

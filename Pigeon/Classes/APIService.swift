@@ -22,11 +22,16 @@ class APIService: NSObject {
 
   func patchDevice(_ device: Device, completionHandler: @escaping (Data) -> Void, errorHandler: @escaping (Error) -> Void) {
     guard let pigeonToken = device.pigeonToken else { return }
+
     let urlString = stringURL(type: .device) + "/\(pigeonToken)"
     guard let url = URL(string: urlString) else { return }
 
     var request = URLRequest(url: url)
     request.httpMethod = HttpMethod.PATCH.rawValue
+    if let deviceToken = device.deviceToken {
+      let body = try? JSONSerialization.data(withJSONObject: ["device_token": deviceToken], options: [])
+      request.httpBody = body
+    }
 
     performTask(request, completionHandler: { (data) in
       completionHandler(data)
