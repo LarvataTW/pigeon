@@ -69,7 +69,7 @@ public class PigeonService: NSObject {
 
   private func requestNotificationsPermission(completion: @escaping () -> Swift.Void) {
     let options: UNAuthorizationOptions = [.alert, .sound, .badge]
-    UNUserNotificationCenter.current().requestAuthorization(options: options) { (granted, error) in
+    UNUserNotificationCenter.current().requestAuthorization(options: options) { (granted, _) in
       if granted {
         UNUserNotificationCenter.current().delegate = self
         completion()
@@ -88,14 +88,14 @@ public class PigeonService: NSObject {
 
     if device.pigeonToken != nil {
       apiService.patchDevice(device, completionHandler: {[unowned self] (data) in
-        let device = self.deviceFrom(data)
+        let device = self.device(from: data)
         onCompleted(device)
       }) { (error) in
         onError(error)
       }
     } else {
       apiService.registerDevice(device, completionHandler: {[unowned self] (data) in
-        let device = self.deviceFrom(data)
+        let device = self.device(from: data)
         onCompleted(device)
       }) { (error) in
         onError(error)
@@ -103,10 +103,10 @@ public class PigeonService: NSObject {
     }
   }
 
-  private func deviceFrom(_ data: Data) -> Device {
+  private func device(from data: Data) -> Device {
     var device = Device()
     guard let json = try? JSONSerialization.jsonObject(with: data, options: [])  else { return device}
-    guard let dict = json as? Dictionary<String, Any> else { return device}
+    guard let dict = json as? [String: Any] else { return device}
 
     device.deviceModel = dict["device_model"] as? String
     device.active = dict["active"] as? Bool

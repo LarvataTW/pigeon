@@ -17,10 +17,10 @@ public struct Device: Codable {
 }
 
 extension Device {
-  func body() -> [String : Any] {
+  func body() -> [String: Any] {
     return ["device_token": deviceToken ?? "",
-               "device_model": deviceModel ?? "",
-               "active": active ?? true,
-               "pigeonToken": pigeonToken ?? ""]
+            "device_model": deviceModel ?? "",
+            "active": active ?? true,
+            "pigeonToken": pigeonToken ?? ""]
   }
 }

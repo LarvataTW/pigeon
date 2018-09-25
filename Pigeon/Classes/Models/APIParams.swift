@@ -1,9 +1,9 @@
 import UIKit
 
 enum HttpMethod: String {
-  case POST = "POST"
-  case GET = "GET"
-  case PATCH = "PATCH"
+  case POST
+  case GET
+  case PATCH
 }
 
 enum API: String {

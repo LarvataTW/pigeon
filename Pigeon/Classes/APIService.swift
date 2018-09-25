@@ -63,7 +63,6 @@ class APIService: NSObject {
       }.resume()
   }
 
-
   private func stringURL(type: Type) -> String {
     return API.base.rawValue + type.rawValue
   }
