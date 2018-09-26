@@ -13,3 +13,7 @@ enum API: String {
 enum Type: String {
   case device = "/api/device"
 }
+
+enum ContentType: String {
+  case json = "application/json"
+}

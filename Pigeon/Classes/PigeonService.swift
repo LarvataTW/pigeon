@@ -34,6 +34,12 @@ public class PigeonService: NSObject {
     super.init()
   }
 
+  /**
+   Send request to APNs server to get device token.
+
+   - parameter appKey: Each app have own key when create a new application.
+   - parameter delegate: Who follow PigeonRegisterDelegate protocol.
+   */
   @available(iOS 10.0, *)
   public func registerForRemoteNotifications(appKey: String, delegate: PigeonRegisterDelegate) {
     self.appKey = appKey
@@ -46,6 +52,11 @@ public class PigeonService: NSObject {
     }
   }
 
+  /**
+   start register new device.
+
+   - parameter deviceToken: Devicetoken from application:didRegisterForRemoteNotificationsWithDeviceToken:.
+   */
   public func registerDeviceToken(deviceToken: Data) {
     self.deviceToken = deviceToken.reduce("") {
       $0 + String(format: "%02x", $1)

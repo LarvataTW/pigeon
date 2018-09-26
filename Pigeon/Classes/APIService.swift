@@ -8,10 +8,13 @@ class APIService: NSObject {
     let urlString = stringURL(type: .device)
     guard let url = URL(string: urlString) else { return }
 
-    var request = URLRequest(url: url)
+    var request = jsonRequest(url: url)
     request.httpMethod = HttpMethod.POST.rawValue
     request.httpBody = body
-    request.allHTTPHeaderFields = ["app_key": appKey]
+
+    var header = request.allHTTPHeaderFields ?? [:]
+    header["app_key"] = appKey
+    request.allHTTPHeaderFields = header
 
     performTask(request, completionHandler: { (data) in
       completionHandler(data)
@@ -26,7 +29,7 @@ class APIService: NSObject {
     let urlString = stringURL(type: .device) + "/\(pigeonToken)"
     guard let url = URL(string: urlString) else { return }
 
-    var request = URLRequest(url: url)
+    var request = jsonRequest(url: url)
     request.httpMethod = HttpMethod.PATCH.rawValue
     if let deviceToken = device.deviceToken {
       let body = try? JSONSerialization.data(withJSONObject: ["device_token": deviceToken], options: [])
@@ -65,6 +68,12 @@ class APIService: NSObject {
 
   private func stringURL(type: Type) -> String {
     return API.base.rawValue + type.rawValue
+  }
+
+  private func jsonRequest(url: URL) -> URLRequest {
+    var request = URLRequest(url: url)
+    request.allHTTPHeaderFields = ["Content-Type": ContentType.json.rawValue]
+    return request
   }
 
   private func validateStatusCode(_ response: URLResponse) -> Bool {
