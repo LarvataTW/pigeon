@@ -56,4 +56,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 }
 
-extension AppDelegate: PigeonRegisterDelegate { }
+extension AppDelegate: PigeonRegisterDelegate {
+  func pigeonNotificationCenter(didReceive error: Error) {
+    print("pigeonNotificationCenter didReceive error: \(error)")
+  }
+}

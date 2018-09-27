@@ -62,8 +62,6 @@ public class PigeonService: NSObject {
       $0 + String(format: "%02x", $1)
     }
 
-    print("deviceToken : \(self.deviceToken)")
-
     var device = Device()
     device.deviceModel = UIDevice.current.model
     device.deviceToken = self.deviceToken
@@ -73,9 +71,9 @@ public class PigeonService: NSObject {
 
     register(device: device, onCompleted: { [unowned self] (device) in
       self.savePigeonToken(device)
-    }) { (error) in
-      print("register error: \(error)")
-    }
+    }, onError: { [unowned self] (error) in
+      self.delegate?.pigeonNotificationCenter(didReceive: error)
+    })
   }
 
   private func requestNotificationsPermission(completion: @escaping () -> Swift.Void) {
@@ -101,16 +99,16 @@ public class PigeonService: NSObject {
       apiService.patchDevice(device, completionHandler: {[unowned self] (data) in
         let device = self.device(from: data)
         onCompleted(device)
-      }) { (error) in
+      }, errorHandler: { (error) in
         onError(error)
-      }
+      })
     } else {
       apiService.registerDevice(device, completionHandler: {[unowned self] (data) in
         let device = self.device(from: data)
         onCompleted(device)
-      }) { (error) in
+      }, errorHandler: { (error) in
         onError(error)
-      }
+      })
     }
   }
 
@@ -129,11 +127,7 @@ public class PigeonService: NSObject {
 
   private func savePigeonToken(_ device: Device) {
     guard let token = device.pigeonToken else { return }
-    do {
-      try keychain.save(account: KeychainConfigure.PigeonTokenAccount, token: token)
-    } catch {
-      print("save pigeon token error: \(error)")
-    }
+    try? keychain.save(account: KeychainConfigure.PigeonTokenAccount, token: token)
   }
 }
 

@@ -18,9 +18,9 @@ class APIService: NSObject {
 
     performTask(request, completionHandler: { (data) in
       completionHandler(data)
-    }) { (error) in
+    }, errorHandler: { (error) in
       errorHandler(error)
-    }
+    })
   }
 
   func patchDevice(_ device: Device, completionHandler: @escaping (Data) -> Void, errorHandler: @escaping (Error) -> Void) {
@@ -38,32 +38,39 @@ class APIService: NSObject {
 
     performTask(request, completionHandler: { (data) in
       completionHandler(data)
-    }) { (error) in
+    }, errorHandler: { (error) in
       errorHandler(error)
-    }
+    })
   }
 
   private func performTask(_ request: URLRequest, completionHandler: @escaping (Data) -> Void, errorHandler: @escaping (Error) -> Void) {
-    URLSession.shared.dataTask(with: request) { (data, response, error) in
-      print("---------registerDevice--------------")
-      print("response: \(response)")
-      print("error: \(error)")
-      print("----------------------------------------")
-
-      if let err = error {
-        errorHandler(err)
-      } else if let resp = response {
-        if self.validateStatusCode(resp),
-          let data = data {
-          completionHandler(data)
-        } else {
-          errorHandler(ServiceError.wrongParams)
+    URLSession.shared.dataTask(with: request) { [unowned self] (data, response, error) in
+        guard error == nil else {
+          errorHandler(error!)
+          return
         }
-      } else {
-        errorHandler(ServiceError.noResponse)
-      }
 
-      }.resume()
+        guard let resp = response,
+              let data = data
+          else {
+            errorHandler(PigeonServiceError(statusCode: unexpectedError))
+            return
+        }
+
+        let code = self.statusCode(resp)
+        guard code != unexpectedError else {
+          errorHandler(PigeonServiceError(statusCode: unexpectedError))
+          return
+        }
+
+        guard self.validateStatusCode(code) == true else {
+          errorHandler(PigeonServiceError(statusCode: code))
+          return
+        }
+
+        completionHandler(data)
+
+    }.resume()
   }
 
   private func stringURL(type: Type) -> String {
@@ -72,17 +79,17 @@ class APIService: NSObject {
 
   private func jsonRequest(url: URL) -> URLRequest {
     var request = URLRequest(url: url)
-    request.allHTTPHeaderFields = ["Content-Type": ContentType.json.rawValue]
+    request.allHTTPHeaderFields = ["Content-Type": ContentType.json.rawValue,
+                                   "Accept": ContentType.json.rawValue]
     return request
   }
 
-  private func validateStatusCode(_ response: URLResponse) -> Bool {
-    guard let resp = response as? HTTPURLResponse else { return false }
-    return resp.statusCode == 200
+  private func statusCode(_ response: URLResponse) -> Int {
+    guard let resp = response as? HTTPURLResponse else { return unexpectedError }
+    return resp.statusCode
   }
-}
 
-enum ServiceError: Error {
-  case noResponse
-  case wrongParams
+  private func validateStatusCode(_ code: Int) -> Bool {
+    return code == 200
+  }
 }

@@ -35,8 +35,8 @@ struct KeychainService {
     guard status == noErr else { throw KeychainError.unhandledError(status: status) }
 
     guard let existingItem = queryResult as? [String: AnyObject],
-             let tokenData = existingItem[kSecValueData as String] as? Data,
-             let token = String(data: tokenData, encoding: String.Encoding.utf8)
+          let tokenData = existingItem[kSecValueData as String] as? Data,
+          let token = String(data: tokenData, encoding: String.Encoding.utf8)
       else {
         throw KeychainError.unexpectedTokenData
     }
