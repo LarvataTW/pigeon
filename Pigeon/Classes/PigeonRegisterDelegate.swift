@@ -18,7 +18,7 @@ public protocol PigeonRegisterDelegate: class {
   func pigeonNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Swift.Void)
-  func pigeonNotificationCenter(didReceive error: Error)
+  func pigeonNotificationCenter(didReceive error: PigeonServiceError)
 }
 
 @available(iOS 10.0, *)

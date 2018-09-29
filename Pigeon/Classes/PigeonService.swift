@@ -93,7 +93,7 @@ public class PigeonService: NSObject {
    - parameter onCompleted: Action to invoke upon server returned successful response.
    - parameter onError: Action to invoke upon server returned unexpected response or request timeout.
    */
-  private func register(device: Device, onCompleted: @escaping (Device) -> Void, onError: @escaping (Error) -> Void) {
+  private func register(device: Device, onCompleted: @escaping (Device) -> Void, onError: @escaping (PigeonServiceError) -> Void) {
 
     if device.pigeonToken != nil {
       apiService.patchDevice(device, completionHandler: {[unowned self] (data) in

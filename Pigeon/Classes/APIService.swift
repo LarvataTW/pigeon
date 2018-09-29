@@ -1,7 +1,7 @@
 import Foundation
 
 class APIService: NSObject {
-  func registerDevice(_ device: Device, completionHandler: @escaping (Data) -> Void, errorHandler: @escaping (Error) -> Void) {
+  func registerDevice(_ device: Device, completionHandler: @escaping (Data) -> Void, errorHandler: @escaping (PigeonServiceError) -> Void) {
     guard let body = try? JSONSerialization.data(withJSONObject: device.body(), options: []) else { return }
     guard let appKey = device.appKey else { return }
 
@@ -23,7 +23,7 @@ class APIService: NSObject {
     })
   }
 
-  func patchDevice(_ device: Device, completionHandler: @escaping (Data) -> Void, errorHandler: @escaping (Error) -> Void) {
+  func patchDevice(_ device: Device, completionHandler: @escaping (Data) -> Void, errorHandler: @escaping (PigeonServiceError) -> Void) {
     guard let pigeonToken = device.pigeonToken else { return }
 
     let urlString = stringURL(type: .device) + "/\(pigeonToken)"
@@ -43,33 +43,31 @@ class APIService: NSObject {
     })
   }
 
-  private func performTask(_ request: URLRequest, completionHandler: @escaping (Data) -> Void, errorHandler: @escaping (Error) -> Void) {
-    URLSession.shared.dataTask(with: request) { [unowned self] (data, response, error) in
+  private func performTask(_ request: URLRequest, completionHandler: @escaping (Data) -> Void, errorHandler: @escaping (PigeonServiceError) -> Void) {
+
+    URLSession.shared.dataTask(with: request) { (data, response, error) in
         guard error == nil else {
-          errorHandler(error!)
+          errorHandler(PigeonServiceError.networkFail(error!))
           return
         }
 
-        guard let resp = response,
+        guard let httpResponse = response as? HTTPURLResponse,
               let data = data
           else {
-            errorHandler(PigeonServiceError(statusCode: unexpectedError))
+            errorHandler(PigeonServiceError.unexpectedError(NSError(domain: NSURLErrorDomain,
+                                                                    code: StatusCodeType.unexpectedError.rawValue,
+                                                                    userInfo: nil)))
             return
         }
 
-        let code = self.statusCode(resp)
-        guard code != unexpectedError else {
-          errorHandler(PigeonServiceError(statusCode: unexpectedError))
-          return
+        do {
+          try Validation.validateStatusCode(httpResponse.statusCode)
+          completionHandler(data)
+        } catch let serviceError as PigeonServiceError {
+          errorHandler(serviceError)
+        } catch {
+          // won't entry here
         }
-
-        guard self.validateStatusCode(code) == true else {
-          errorHandler(PigeonServiceError(statusCode: code))
-          return
-        }
-
-        completionHandler(data)
-
     }.resume()
   }
 
@@ -82,14 +80,5 @@ class APIService: NSObject {
     request.allHTTPHeaderFields = ["Content-Type": ContentType.json.rawValue,
                                    "Accept": ContentType.json.rawValue]
     return request
-  }
-
-  private func statusCode(_ response: URLResponse) -> Int {
-    guard let resp = response as? HTTPURLResponse else { return unexpectedError }
-    return resp.statusCode
-  }
-
-  private func validateStatusCode(_ code: Int) -> Bool {
-    return code == 200
   }
 }

@@ -7,24 +7,27 @@
 
 import Foundation
 
-let unexpectedError = -1
+public enum PigeonServiceError: Error {
+  case networkFail(Error)
+  case unexpectedError(Error)
+  case parameterError(Error)
+  case appkeyError(Error)
+  case pigeonTokenError(Error)
+}
 
-private var pigeonErrorDescription: [Int: String] = [
-  -1: "unexpected error",
-  202: "less parameter",
-  204: "app doesn't register",
-  400: "pigeon token is wrong",
-  401: "without pigeon token"
-]
-
-public struct PigeonServiceError: Error {
-  var localizedDescription: String {
-    return pigeonErrorDescription[statusCode] ?? "unexpected error"
-  }
-
-  private(set) var statusCode: Int
-
-  init(statusCode: Int) {
-    self.statusCode = statusCode
+extension PigeonServiceError: LocalizedError {
+  public var errorDescription: String? {
+    switch self {
+    case .networkFail(let err):
+      return err.localizedDescription
+    case .unexpectedError:
+      return "unexpected error"
+    case .parameterError:
+      return "less parameter"
+    case .appkeyError:
+      return "app doesn't register"
+    case .pigeonTokenError:
+      return "pigeon token is wrong"
+    }
   }
 }
