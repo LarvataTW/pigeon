@@ -61,7 +61,7 @@ class APIService: NSObject {
         }
 
         do {
-          try Validation.validateStatusCode(httpResponse.statusCode)
+          try Validation.validateResponse(httpResponse)
           completionHandler(data)
         } catch let serviceError as PigeonServiceError {
           errorHandler(serviceError)

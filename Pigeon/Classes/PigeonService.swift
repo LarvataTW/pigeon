@@ -62,18 +62,26 @@ public class PigeonService: NSObject {
       $0 + String(format: "%02x", $1)
     }
 
-    var device = Device()
-    device.deviceModel = UIDevice.current.model
-    device.deviceToken = self.deviceToken
-    device.active = true
-    device.appKey = self.appKey
-    device.pigeonToken = try? keychain.read(account: KeychainConfigure.PigeonTokenAccount)
+    do {
+      try Validation.validateAppKey(self.appKey)
 
-    register(device: device, onCompleted: { [unowned self] (device) in
-      self.savePigeonToken(device)
-    }, onError: { [unowned self] (error) in
-      self.delegate?.pigeonNotificationCenter(didReceive: error)
-    })
+      var device = Device()
+      device.deviceModel = UIDevice.current.model
+      device.deviceToken = self.deviceToken
+      device.active = true
+      device.appKey = self.appKey
+      device.pigeonToken = try? keychain.read(account: KeychainConfigure.PigeonTokenAccount)
+
+      register(device: device, onCompleted: { [unowned self] (device) in
+        self.savePigeonToken(device)
+        }, onError: { [unowned self] (error) in
+          self.delegate?.pigeonNotificationCenter(didReceive: error)
+      })
+    } catch let keyError as PigeonServiceError {
+      delegate?.pigeonNotificationCenter(didReceive: keyError)
+    } catch {
+
+    }
   }
 
   private func requestNotificationsPermission(completion: @escaping () -> Swift.Void) {

@@ -10,9 +10,9 @@ import Foundation
 public enum PigeonServiceError: Error {
   case networkFail(Error)
   case unexpectedError(Error)
-  case parameterError(Error)
-  case appkeyError(Error)
-  case pigeonTokenError(Error)
+  case invalidAppKey
+  case parameterError(params: [String: String]?)
+  case validateError(code: Int, detail: String?)
 }
 
 extension PigeonServiceError: LocalizedError {
@@ -22,12 +22,12 @@ extension PigeonServiceError: LocalizedError {
       return err.localizedDescription
     case .unexpectedError:
       return "unexpected error"
+    case .invalidAppKey:
+      return "app key is invalid"
     case .parameterError:
       return "less parameter"
-    case .appkeyError:
-      return "app doesn't register"
-    case .pigeonTokenError:
-      return "pigeon token is wrong"
+    case .validateError(let code, let detail):
+      return "errorCode(\(code)) \(detail ?? "")"
     }
   }
 }
