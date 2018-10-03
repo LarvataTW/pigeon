@@ -1,8 +1,7 @@
 included:
-  - ./
+  - ./Pigeon
+  - ./Tests
   - ../Pigeon/Classes
-excluded:
-  - Pods
 cyclomatic_complexity: 12
 file_length: 550
 function_body_length: 80
